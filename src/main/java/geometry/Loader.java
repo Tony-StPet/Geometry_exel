@@ -37,24 +37,35 @@ public class Loader {
         return rectangles;
     }
 
-        public static void loadExel (String filename) throws Exception {
-            try (FileInputStream fis = new FileInputStream(filename);
-                 Workbook workbook = new XSSFWorkbook(fis)) {
-                Sheet sheet = workbook.getSheetAt(0);
-                Iterator<Row> rowIterator = sheet.iterator();
-                while (rowIterator.hasNext()) {
-                    Row row = rowIterator.next();
-                    Iterator<Cell> cellIterator = row.cellIterator();
 
-                    while (cellIterator.hasNext()) {
-                        Cell cell = cellIterator.next();
-                        // Обработка различных типов данных в ячейках
-                        System.out.print(cell.toString() + " ; ");
-                    }
-                    System.out.println();  // Начало новой строки
+// метод загружает содержимое Excel-файла, перебирает все ячейки и выводит их значения в консоль.
+// Он не возвращает никаких результатов, только выводит данные. метод должен корректно обрабатывать как существующие,
+// так и несуществующие файлы. Если файл не найден, он должен вызывать исключение
+
+    public static void loadExel (String filename) throws Exception {
+    //Метод использует try-with-resources конструкцию, чтобы гарантированно закрыть FileInputStream и Workbook после завершения работы
+        try (FileInputStream fis = new FileInputStream(filename);
+    // Создается FileInputStream для чтения файла  - Затем создается Workbook на основе FileInputStream, предполагается, что это файл формата XLSX.
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            //  предполагается, что в файле только один лист
+            Sheet sheet = workbook.getSheetAt(0);
+            // итерация по всем строкам листа
+            Iterator<Row> rowIterator = sheet.iterator();
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                // Для каждой строки выполняется итерация по всем ячейкам cellIterator = row.cellIterator()
+                Iterator<Cell> cellIterator = row.cellIterator();
+
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+    // Обработка различных типов данных в ячейках Для каждой ячейки вывод в консоль (cell.toString()), разделенное символом ;
+                    System.out.print(cell.toString() + " ; ");
                 }
+                System.out.println();  // Начало новой строки
             }
         }
+    }
 
 
 
