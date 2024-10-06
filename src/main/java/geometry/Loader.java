@@ -1,20 +1,16 @@
 package geometry;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.*;
+import org.apache.poi.ss.usermodel.CellType;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Vector;
 
-    // класс Загрузчик
+// класс Загрузчик
 public class Loader {
 
     //СТАТИЧЕСКИЙ метод загрузитьСписокПрямоугольников
@@ -67,6 +63,52 @@ public class Loader {
         }
     }
 
+
+        public static List<Rectangle> readExcelAndGetRectangles(String filename) throws Exception {
+            List<Rectangle> rectangles = new ArrayList<>();
+
+            try (FileInputStream fis = new FileInputStream(filename);
+                 Workbook workbook = new XSSFWorkbook(fis)) {
+
+                Sheet sheet = workbook.getSheetAt(0);
+                Iterator<Row> rowIterator = sheet.iterator();
+                while (rowIterator.hasNext()) {
+                    Row row = rowIterator.next();
+                    Iterator<Cell> cellIterator = row.cellIterator();
+
+                    // Считываем данные ячеек и создаем объект Rectangle
+                    double width = getCellValueAsDouble(cellIterator.next());
+                    double length = getCellValueAsDouble(cellIterator.next());
+
+                    try {
+                        Rectangle rectangle = new Rectangle(width, length);
+                        rectangles.add(rectangle);
+                    } catch (NegativeLengthException | ZeroLengthException e) {
+                        // Игнорируем прямоугольники с отрицательными или нулевыми размерами
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+
+            return rectangles;
+        }
+
+    private static double getCellValueAsDouble(Cell cell) {
+        CellType cellType = cell.getCellTypeEnum();
+        if (cellType == CellType.NUMERIC) {
+            return cell.getNumericCellValue();
+        } else if (cellType == CellType.STRING) {
+            try {
+                return Double.parseDouble(cell.getStringCellValue());
+            } catch (NumberFormatException e) {
+                // Если значение ячейки не может быть преобразовано в Double, вернуть 0.0
+                return 0.0;
+            }
+        } else {
+            // Если тип ячейки не поддерживается, вернуть 0.0
+            return 0.0;
+        }
+    }
 
 
 }
