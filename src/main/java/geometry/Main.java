@@ -4,6 +4,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import geometry.Rectangle;
 import java.awt.*;
 import java.io.FileInputStream;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -27,7 +28,34 @@ public class Main {
             System.out.println("Ошибка при чтении Excel-файла: " + e.getMessage());
         }
 
+        try {
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/Ships",
+                    "root", "1404Root)");
+            // Создание объекта Statement для выполнения SQL-запросов
+            Statement statement = connection.createStatement();
 
+            // Выполнение SQL-запроса для выборки данных из таблицы Ships
+            ResultSet results = statement.executeQuery("SELECT * FROM Ship");
+
+            // Обработка результата
+            while (results.next()) {
+                Integer id = results.getInt("id"); // Предполагается, что в таблице есть поле id
+                String name = results.getString("name");
+                String type = results.getString("type");
+                Double speed = results.getDouble("speed");
+                String armament = results.getString("armament");
+
+                // Вывод данных на консоль
+                System.out.println("ID: " + id + ", Name: " + name + ", Type: " + type +
+                        ", Speed: " + speed + " knots, Armament: " + armament);
+            }
+
+            // Закрытие подключения
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace(); // Вывод информации об ошибках
+        }
 
 
     }
