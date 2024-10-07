@@ -27,7 +27,10 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Ошибка при чтении Excel-файла: " + e.getMessage());
         }
-
+// как я это сделал
+        // туториал взят https://javarush.com/quests/lectures/questhibernate.level07.lecture01
+        //Самая важная деталь – сама библиотека JDBC Driver для MySQL сервера.  нужно ее  добавить.
+        //  в <dependency> JDBC-драйвер для MySQL:</dependency>
         try {
             Connection connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/Ships",
